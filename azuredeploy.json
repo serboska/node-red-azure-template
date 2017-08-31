@@ -82,7 +82,7 @@
         "description": "NIC Name"
       }
     },
-    "allow1880AccessFrom": {
+    "AllowInternetInBoundIP": {
       "type": "string",
       "minLength": 1,
       "metadata": {
@@ -271,7 +271,7 @@
                         "protocol": "*",
                         "sourcePortRange": "*",
                         "destinationPortRange": "1880",
-                        "sourceAddressPrefix": "[parameters('allow1880AccessFrom')]",
+                        "sourceAddressPrefix": "[parameters('AllowInternetInBoundIP')]",
                         "destinationAddressPrefix": "*",
                         "access": "Allow",
                         "priority": 100,
