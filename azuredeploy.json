@@ -87,6 +87,7 @@
       "minLength": 1,
       "metadata": {
        "description": "Public source IP address from which to allow traffic to TCP port 1880 (Node-Red)"
+     }
     },
     "networkSecurityGroups_node_red_nsg_name": {
         "defaultValue": "node-red-nsg",
@@ -188,7 +189,7 @@
         ],
         "networkSecurityGroup": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_node_red_nsg_name'))]"
-        },
+        }
       },
       "dependsOn": [
           "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_node_red_nsg_name'))]"
