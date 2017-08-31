@@ -82,6 +82,10 @@
         "description": "NIC Name"
       }
     },
+    "allow1880AccessFrom": {
+      "type": "string",
+      "minLength": 1
+    },
     "networkSecurityGroups_node_red_nsg_name": {
         "defaultValue": "node-red-nsg",
         "type": "String"
