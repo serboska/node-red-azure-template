@@ -84,7 +84,9 @@
     },
     "allow1880AccessFrom": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "metadata": {
+       "description": "Public source IP address from which to allow traffic to TCP port 1880 (Node-Red)"
     },
     "networkSecurityGroups_node_red_nsg_name": {
         "defaultValue": "node-red-nsg",
@@ -400,9 +402,9 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "https://raw.githubusercontent.com/***.sh"
+            "https://raw.githubusercontent.com/serboska/node-red-azure-template/master/install_node-red.sh"
           ],
-          "commandToExecute": "sh ***.sh"
+          "commandToExecute": "sh install_node-red.sh"
         }
       }
     }
