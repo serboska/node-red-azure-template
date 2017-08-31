@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_node_red_name": {
+            "value": "node-red"
+        },
+        "adminUsername": {
+            "value": "user"
+        },
+        "adminPassword": {
+            "value": "password"
+        },
+        "publicipaddressDnsName": {
+            "value": "dns-name"
+        },
+        "allow1880AccessFrom": {
+            "value": null
+        },
+
+
+        "networkInterfaces_node_red303_name": {
+            "value": null
+        },
+        "publicIPAddresses_node_red_ip_name": {
+            "value": null
+        },
+        "networkSecurityGroups_node_red_nsg_name": {
+            "value": null
+        },
+        "virtualNetworks_aleksiv_node_red_vnet_name": {
+            "value": null
+        },
+        "subnets_default_name": {
+            "value": null
+        },
+        "disks_node_red_OsDisk_1_0dc7ddbb31dd48c58c89af7aac8fa8a8_name": {
+            "value": null
+        },
+        "securityRules_Port_1880_name": {
+            "value": null
+        },
+        "securityRules_default_allow_ssh_name": {
+            "value": null
+        }
+    }
+}
