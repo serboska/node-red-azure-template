@@ -183,10 +183,14 @@
         "networkSecurityGroup": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_node_red_nsg_name'))]"
         },
+<<<<<<< HEAD
       },
       "dependsOn": [
           "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_node_red_nsg_name'))]"
       ]
+=======
+      }
+>>>>>>> 0fd6f7d8f583a9f4df6e528d329abdf6a94acab9
     },
     {
       "apiVersion": "2015-05-01-preview",
