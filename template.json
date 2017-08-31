@@ -23,6 +23,10 @@
           "type": "string",
           "minLength": 1
         },
+        "allow1880AccessFrom": {
+          "type": "string",
+          "minLength": 1
+        },
 
         "networkInterfaces_node_red303_name": {
             "defaultValue": "node-red303",
@@ -216,10 +220,11 @@
                         "etag": "W/\"b9d91df3-cdd3-41d6-92ac-15c5816d06dc\"",
                         "properties": {
                             "provisioningState": "Succeeded",
+                            "description": "Allow inbound traffic to port 1880 from given source address",
                             "protocol": "*",
                             "sourcePortRange": "*",
                             "destinationPortRange": "1880",
-                            "sourceAddressPrefix": "188.117.22.59",
+                            "sourceAddressPrefix": "[parameters('allow1880AccessFrom')]",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
                             "priority": 100,
@@ -359,6 +364,22 @@
             },
             "dependsOn": []
         },
+        {
+          "name": "[variables('publicipaddressName')]",
+          "type": "Microsoft.Network/publicIPAddresses",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [ ],
+          "tags": {
+            "displayName": "public-ip-front"
+            },
+            "properties": {
+              "publicIPAllocationMethod": "Dynamic",
+              "dnsSettings": {
+                "domainNameLabel": "[parameters('publicipaddressDnsName')]"
+              }
+            }
+        }
         {
             "comments": "Generalized from resource: '/subscriptions/0a1f92e6-2fc0-4f08-a12d-224bec28e22b/resourceGroups/aleksiv-node-red/providers/Microsoft.Network/virtualNetworks/aleksiv-node-red-vnet'.",
             "type": "Microsoft.Network/virtualNetworks",
