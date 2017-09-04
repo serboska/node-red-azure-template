@@ -340,7 +340,7 @@
                   "fileUris": [
                     "https://raw.githubusercontent.com/serboska/node-red-azure-template/master/install_node-red.sh"
                   ],
-                  "commandToExecute": "[concat('sh install_node-red.sh ', parameters('adminUsername')]"
+                  "commandToExecute": "[concat('sh install_node-red.sh ', parameters('adminUsername'))]"
                 }
             }
     }
