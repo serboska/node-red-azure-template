@@ -127,7 +127,7 @@
         }
       },
       "dependsOn": [
-          "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_node_red_nsg_name'))]"
+          "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroups_node_red_nsg_name'))]"
       ]
     },
     {
