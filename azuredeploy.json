@@ -401,12 +401,14 @@
                 "type": "CustomScriptForLinux",
                 "typeHandlerVersion": "1.5",
                 "autoUpgradeMinorVersion": true,
-                "fileUris": [
-                  "https://raw.githubusercontent.com/serboska/node-red-azure-template/master/install_node-red.sh"
-                ],
-                "commandToExecute": "sh install_node-red.sh"
+                "settings": {
+                  "fileUris": [
+                    "https://raw.githubusercontent.com/serboska/node-red-azure-template/master/install_node-red.sh"
+                  ],
+                  "commandToExecute": "sh install_node-red.sh"
                 }
-      }
+            }
+    }
 
   ]
 }
