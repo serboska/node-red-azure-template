@@ -26,62 +26,6 @@
         "description": "Admin Password"
       }
     },
-    "imagePublisher": {
-      "type": "string",
-      "defaultValue": "Canonical",
-      "metadata": {
-        "description": "Image Publisher"
-      }
-    },
-    "imageOffer": {
-      "type": "string",
-      "defaultValue": "UbuntuServer",
-      "metadata": {
-        "description": "Image Offer"
-      }
-    },
-    "imageSKU": {
-      "type": "string",
-      "defaultValue": "16.04-LTS",
-      "metadata": {
-        "description": "Image SKU"
-      }
-    },
-    "vmSize": {
-      "type": "string",
-      "defaultValue": "Standard_A1_v2",
-       "metadata": {
-        "description": "VM Size"
-      }
-    },
-    "publicIPAddressName": {
-      "type": "string",
-      "defaultValue": "myPublicIP",
-       "metadata": {
-        "description": "Public IP Address Name"
-      }
-    },
-    "vmName": {
-      "type": "string",
-      "defaultValue": "myLinuxVM",
-      "metadata": {
-        "description": "Vm Name"
-      }
-    },
-    "virtualNetworkName": {
-      "type": "string",
-      "defaultValue": "myVNET",
-       "metadata": {
-        "description": "Virtual Network Name"
-      }
-    },
-    "nicName": {
-      "type": "string",
-      "defaultValue": "myNIC",
-      "metadata": {
-        "description": "NIC Name"
-      }
-    },
     "AllowInternetInBoundIP": {
       "type": "string",
       "minLength": 1,
@@ -89,30 +33,27 @@
        "description": "Public source IP address from which to allow traffic to TCP port 1880 (Node-Red)"
      }
     },
-    "networkSecurityGroups_node_red_nsg_name": {
-        "defaultValue": "node-red-nsg",
-        "type": "String"
-    },
-    "securityRules_Port_1880_name": {
-        "defaultValue": "Port_1880",
-        "type": "String"
-    },
-    "securityRules_default_allow_ssh_name": {
-        "defaultValue": "default-allow-ssh",
-        "type": "String"
-    }
   },
   "variables": {
     "addressPrefix": "10.0.0.0/16",
     "subnet1Name": "Subnet-1",
-    "subnet2Name": "Subnet-2",
     "subnet1Prefix": "10.0.0.0/24",
-    "subnet2Prefix": "10.0.1.0/24",
     "vmStorageAccountContainerName": "vhds",
     "publicIPAddressType": "Dynamic",
     "storageAccountType": "Standard_LRS",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
-    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]"
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
+    "imagePublisher": "Canonical",
+    "imageOffer": "UbuntuServer",
+    "imageSKU": "16.04-LTS",
+    "vmSize": "Standard_A1_v2",
+    "publicIPAddressName": "myPublicIP",
+    "vmName": "myLinuxVM",
+    "virtualNetworkName": "myVNET",
+    "nicName": "myNIC",
+    "networkSecurityGroups_node_red_nsg_name": "node-red-nsg",
+    "securityRules_Port_1880_name": "Port_1880",
+    "securityRules_default_allow_ssh_name": "default-allow-ssh",
   },
   "resources": [
     {
@@ -152,12 +93,6 @@
             "name": "[variables('subnet1Name')]",
             "properties": {
               "addressPrefix": "[variables('subnet1Prefix')]"
-            }
-          },
-          {
-            "name": "[variables('subnet2Name')]",
-            "properties": {
-              "addressPrefix": "[variables('subnet2Prefix')]"
             }
           }
         ]
