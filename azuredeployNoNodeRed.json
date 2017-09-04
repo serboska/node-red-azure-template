@@ -1,0 +1,328 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "newStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "New Storage Account Name"
+      }
+    },
+    "dnsNameForPublicIP": {
+      "type": "string",
+      "metadata": {
+        "description": "DNS Name for Public IP"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin Username"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin Password"
+      }
+    },
+    "AllowInternetInBoundIP": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+       "description": "Public source IP address from which to allow traffic to TCP port 1880 (Node-Red)"
+     }
+    },
+  },
+  "variables": {
+    "addressPrefix": "10.0.0.0/16",
+    "subnet1Name": "Subnet-1",
+    "subnet1Prefix": "10.0.0.0/24",
+    "vmStorageAccountContainerName": "vhds",
+    "publicIPAddressType": "Dynamic",
+    "virtualNetworkName": "myVNET",
+    "storageAccountType": "Standard_LRS",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
+    "imagePublisher": "Canonical",
+    "imageOffer": "UbuntuServer",
+    "imageSKU": "16.04-LTS",
+    "vmSize": "Standard_A1_v2",
+    "publicIPAddressName": "myPublicIP",
+    "vmName": "myLinuxVM",
+    "nicName": "myNIC",
+    "networkSecurityGroups_node_red_nsg_name": "node-red-nsg",
+    "securityRules_Port_1880_name": "Port_1880",
+    "securityRules_default_allow_ssh_name": "default-allow-ssh",
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('newStorageAccountName')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "[variables('storageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsNameForPublicIP')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet1Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+              },
+              "subnet": {
+                "id": "[variables('subnet1Ref')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroups_node_red_nsg_name'))]"
+        }
+      },
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroups_node_red_nsg_name'))]"
+      ]
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('newStorageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('imageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk1",
+            "vhd": {
+              "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/','osdisk1spec.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "name": "[variables('networkSecurityGroups_node_red_nsg_name')]",
+        "apiVersion": "2017-06-01",
+        "location": "[resourceGroup().location]",
+        "scale": null,
+        "properties": {
+            "provisioningState": "Succeeded",
+            "securityRules": [
+                {
+                    "name": "default-allow-ssh",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "22",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 1000,
+                        "direction": "Inbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                },
+                {
+                    "name": "Port_1880",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Allow inbound traffic to port 1880 from given source address",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "1880",
+                        "sourceAddressPrefix": "[parameters('AllowInternetInBoundIP')]",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                }
+            ],
+            "defaultSecurityRules": [
+                {
+                    "name": "AllowVnetInBound",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Allow inbound traffic from all VMs in VNET",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "VirtualNetwork",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 65000,
+                        "direction": "Inbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                },
+                {
+                    "name": "AllowAzureLoadBalancerInBound",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Allow inbound traffic from azure load balancer",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "AzureLoadBalancer",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 65001,
+                        "direction": "Inbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                },
+                {
+                    "name": "DenyAllInBound",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Deny all inbound traffic",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 65500,
+                        "direction": "Inbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                },
+                {
+                    "name": "AllowVnetOutBound",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "VirtualNetwork",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 65000,
+                        "direction": "Outbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                },
+                {
+                    "name": "AllowInternetOutBound",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Allow outbound traffic from all VMs to Internet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "Internet",
+                        "access": "Allow",
+                        "priority": 65001,
+                        "direction": "Outbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                },
+                {
+                    "name": "DenyAllOutBound",
+                    "properties": {
+                        "provisioningState": "Succeeded",
+                        "description": "Deny all outbound traffic",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 65500,
+                        "direction": "Outbound",
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                    }
+                }
+            ]
+        },
+        "dependsOn": []
+    }
+
+  ]
+}
