@@ -5,6 +5,7 @@
 apt-get update -y
 curl -sL https://deb.nodesource.com/setup_4.x | -E bash -
 apt-get install -y nodejs build-essential
+apt-get install -y npm
 npm install -g --unsafe-perm node-red
 npm install -g --unsafe-prem node-red-contrib-azure-iot-hub
 
