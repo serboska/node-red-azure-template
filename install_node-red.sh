@@ -3,7 +3,7 @@
 # finally Node-Red is started
 
 apt-get update -y
-curl -sL https://deb.nodesource.com/setup_4.x | -E bash -
+curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 apt-get install -y nodejs build-essential
 apt-get install -y npm
 npm install -g --unsafe-perm node-red
